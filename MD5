@@ -1,12 +1,12 @@
-ae708d131eda23679d981cc859efef4a *DESCRIPTION
+b1028bf26623f93327189c8749870fcc *DESCRIPTION
 2b2691532961ab5fb04929bfea286e71 *NAMESPACE
-22052f7aa26bf004718b016d9a4de6a3 *NEWS.md
+db7d478c0978490d72f705d1d5ef4f2c *NEWS.md
 e50ea3300a702e57193d7a0fa1bbe036 *R/GxEScanR.R
 c60584d83e2007d7a925be9008e3171d *R/LinReg.R
 ef971e85d8ebe7855340bfe86ec0acee *R/LogReg.R
 e0ffcef69ec7542309f798970b82e70f *R/RcppExports.R
 c33bafd753fc51d751a78f06ca035fec *build/vignette.rds
-f1b624def2478d78e51468f13591ed7d *inst/WORDLIST
+dff1182db915bd44d8f7afbcae670a7e *inst/WORDLIST
 1998c564d4e8778c3868b70830bebb50 *inst/doc/UsingGxEScanR.R
 9e11de81f2af34d55b9a1f191a45dbc7 *inst/doc/UsingGxEScanR.Rmd
 eec6a358520c4ea2f1a7a380947db4fa *inst/doc/UsingGxEScanR.html
@@ -26,7 +26,7 @@ f77ac624a43d784ff57c28a8225f2de6 *inst/extdata/pdata_4_2.bdose
 3e14f6ef993eef340d3f4924c73d3a04 *inst/extdata/skipreason.rds
 0682f3372ced277adb119990e4fd8e43 *man/gwas.Rd
 6e0ba3686f14d3b4bee13737ba2ec24d *man/gweis.Rd
-94072f672ca706ba95b09c98f73f7819 *src/LSLinReg.cpp
+b38053c213cac7bf4ca1141493c16e3d *src/LSLinReg.cpp
 d1d98ec3ac5cdbba2ec359deef5d2739 *src/LSLogReg.cpp
 61059660eb073d93e00e8ee054237071 *src/Makevars
 61059660eb073d93e00e8ee054237071 *src/Makevars.win

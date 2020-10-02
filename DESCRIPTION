@@ -1,8 +1,8 @@
 Package: GxEScanR
 Type: Package
 Title: Run GWAS/GWEIS Scans Using Binary Dosage Files
-Version: 2.0.1
-Date: 2020-09-16
+Version: 2.0.2
+Date: 2020-10-02
 Authors@R: 
     c(person(given = "John",
              family = "Morrison",
@@ -34,7 +34,7 @@ RoxygenNote: 7.1.1
 Suggests: BinaryDosage, testthat (>= 2.1.0), covr, knitr, rmarkdown
 VignetteBuilder: knitr
 NeedsCompilation: yes
-Packaged: 2020-09-25 19:50:50 UTC; jbike_000
+Packaged: 2020-10-02 18:22:38 UTC; jbike_000
 Author: John Morrison [aut, cre],
   NCI [fnd] (CA196559),
   NCI [fnd] (CA201407),
@@ -42,4 +42,4 @@ Author: John Morrison [aut, cre],
   NHLBI [fnd] (HL115606)
 Maintainer: John Morrison <jmorr@usc.edu>
 Repository: CRAN
-Date/Publication: 2020-09-29 08:50:11 UTC
+Date/Publication: 2020-10-02 21:52:09 UTC
