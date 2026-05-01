@@ -1,117 +1,103 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
-## ----setup--------------------------------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 library(GxEScanR)
+library(BinaryDosage)
 
-## ---- eval = T, echo = T, message = F, warning = F, tidy = T------------------
-covdatafile <- system.file("extdata", "covdata.rds", package = "GxEScanR")
-covdata <- readRDS(covdatafile)
+## ----genetic-data-convert, eval = FALSE---------------------------------------
+# vcffile <- system.file("extdata", "gendata.vcf.gz", package = "GxEScanR")
+# 
+# exampledir <- tempdir()
+# bdosefile <- file.path(exampledir, "gendata.bdose")
+# 
+# BinaryDosage::vcftobd(vcffile = vcffile, bdose_file = bdosefile)
+# bdinfo <- BinaryDosage::getbdinfo(bdosefile)
 
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-knitr::kable(covdata[1:5,], caption = "First 5 Subjects")
+## ----genetic-data-------------------------------------------------------------
+bdosefile <- system.file("extdata", "gendata.bdose", package = "GxEScanR")
+bdinfo <- BinaryDosage::getbdinfo(bdosefile)
+exampledir <- tempdir()
 
-## ---- eval = T, echo = T, message = F, warning = F, tidy = T------------------
-bdinfofile <- system.file("extdata", "pdata_4_1.bdinfo", package = "GxEScanR")
-bdinfo <- readRDS(bdinfofile)
-bdinfo$filename <- system.file("extdata", "pdata_4_1.bdose", package = "GxEScanR")
+## ----subject-data-------------------------------------------------------------
+subjectfile <- system.file("extdata", "subdata.rds", package = "GxEScanR")
+subjectdata <- readRDS(subjectfile)
+head(subjectdata)
 
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-modeldf <- readRDS(system.file("extdata", "models.rds", package = "GxEScanR"))
-knitr::kable(modeldf, caption = "Models Fit")
+## ----linear-model-------------------------------------------------------------
+# Remove y_logistic from the subject data
+lineardata <- subjectdata[, c(1, 2, 4, 5)]
 
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-knitr::kable(modeldf[1,], caption = "Model Fit")
+# Keep only subjects with complete data
+lineardata <- lineardata[complete.cases(lineardata), ]
 
-## ---- eval = T, echo = T, message = F, warning = F, tidy = T------------------
-lingwas1 <- gwas(data = covdata,
-                 bdinfo = bdinfo,
-                 binary = FALSE)
+# Keep only subjects with genetic data
+lineardata <- lineardata[lineardata$subid %in% bdinfo$samples$sid, ]
 
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-knitr::kable(lingwas1, caption = "Linear Regression GWAS")
+# Fit the linear model
+linearmodel <- glm(y_linear ~ x2 + x1, data = lineardata)
 
-## ---- eval = T, echo = T, message = F, warning = F, tidy = T------------------
-outfile <- tempfile()
-lingwas2 <- gwas(data = covdata,
-                 bdinfo = bdinfo,
-                 outfile = outfile,
-                 binary = FALSE)
-lingwas2
-lingwas2 <- read.table(outfile, header = TRUE, sep ='\t')
+## ----logistic-model-----------------------------------------------------------
+# Remove y_linear from the subject data
+logisticdata <- subjectdata[, c(1, 3, 4, 5)]
 
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-knitr::kable(lingwas2, caption = "Linear Regression GWAS")
+# Keep only subjects with complete data
+logisticdata <- logisticdata[complete.cases(logisticdata), ]
 
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-knitr::kable(modeldf[1:2,], caption = "Models Fit")
+# Keep only subjects with genetic data
+logisticdata <- logisticdata[logisticdata$subid %in% bdinfo$samples$sid, ]
 
-## ---- eval = T, echo = T, message = F, warning = F, tidy = T------------------
-lingweis1 <- gweis(data = covdata,
-                   bdinfo = bdinfo,
-                   minmaf = 0.2,
-                   binary = FALSE)
+# Fit the logistic model
+logisticmodel <- glm(y_logistic ~ x2 + x1, family = binomial, data = logisticdata)
 
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-knitr::kable(lingweis1, caption = "Linear Regression GWEIS")
+## ----allocate-memory----------------------------------------------------------
+# Continuous outcome
+linearmem <- gweis.mem(gemdl = linearmodel,
+                       subids = lineardata$subid,
+                       tests = c("bg_ge", "bg_gxe", "bgxe", "joint"))
 
-## ---- eval = T, echo = T, message = F, warning = F, tidy = T------------------
-skipfile = tempfile()
-lingweis2 <- gweis(data = covdata,
-                   bdinfo = bdinfo,
-                   skipfile = skipfile,
-                   minmaf = 0.2,
-                   binary = FALSE)
+# Dichotomous outcome
+logisticmem <- gweis.mem(gemdl = logisticmodel,
+                         subids = logisticdata$subid,
+                         tests = c("bg_ge", "bg_gxe", "bgxe", "joint",
+                                   "bg_eg", "bg_case", "bg_ctrl"))
 
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-knitr::kable(lingweis2, caption = "Linear Regression GWEIS")
-skipsnps <- read.table(skipfile, header = TRUE, sep = '\t')
+## ----run-gweis----------------------------------------------------------------
+snpindex <- 1:nrow(bdinfo$snps)
 
-## ---- eval = T, echo = T, message = F, warning = F, tidy = T------------------
-knitr::kable(skipsnps, caption = "Skipped SNPs")
+# Continuous outcome
+linearresults <- file.path(exampledir, "linear.txt")
+rungweis(gweismem = linearmem,
+         bdinfo = bdinfo,
+         snps = snpindex,
+         outfilename = linearresults)
 
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-reasondf <- readRDS(system.file("extdata", "skipreason.rds", package = "GxEScanR"))
-knitr::kable(reasondf, caption = "Skipped Reasons")
+# Dichotomous outcome
+logisticresults <- file.path(exampledir, "logistic.txt")
+rungweis(gweismem = logisticmem,
+         bdinfo = bdinfo,
+         snps = snpindex,
+         outfilename = logisticresults)
 
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-knitr::kable(modeldf[1,], caption = "Model Fit")
+## ----read-results-------------------------------------------------------------
+lineardf <- read.table(linearresults, header = TRUE, sep = "\t")
+logisticdf <- read.table(logisticresults, header = TRUE, sep = "\t")
 
-## ---- eval = T, echo = T, message = F, warning = F, tidy = T------------------
-loggwas1 <- gwas(data = covdata,
-                 bdinfo = bdinfo,
-                 blksize = 2,
-                 binary = TRUE)
+## ----snp-info-linear----------------------------------------------------------
+knitr::kable(lineardf[1:3, 1:6], caption = "SNP information — continuous outcome")
 
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-knitr::kable(loggwas1, caption = "Logistic Regression GWAS", digits = 4)
+## ----snp-info-logistic--------------------------------------------------------
+knitr::kable(logisticdf[1:3, 1:8], caption = "SNP information — dichotomous outcome")
 
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-defaultdf <- readRDS(system.file("extdata", "defaultblk.rds", package = "GxEScanR"))
-knitr::kable(defaultdf, caption = "Default blksize")
+## ----model1-output------------------------------------------------------------
+knitr::kable(lineardf[1:3, 7:8], caption = "Model 1 results")
 
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-knitr::kable(modeldf, caption = "Models Fit")
+## ----model2-output------------------------------------------------------------
+knitr::kable(lineardf[1:3, 9:13], caption = "Model 2 results")
 
-## ---- eval = T, echo = T, message = F, warning = F, tidy = T------------------
-loggweis1 <- gweis(data = covdata,
-                   bdinfo = bdinfo,
-                   snps = 1:2,
-                   binary = TRUE)
-
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-knitr::kable(loggweis1, caption = "Logistic Regression GWEIS", digits = 4)
-
-## ---- eval = T, echo = T, message = F, warning = F, tidy = T------------------
-covdata2 <- covdata
-covdata2$e <- covdata2$e + 1
-loggweis2 <- gweis(data = covdata2,
-                   bdinfo = bdinfo,
-                   snps = c("1:10001", "1:10002"))
-
-## ---- eval = T, echo = F, message = F, warning = F, tidy = T------------------
-knitr::kable(loggweis2, caption = "Logistic Regression GWEIS", digits = 4)
+## ----model3-5-output----------------------------------------------------------
+knitr::kable(logisticdf[1:3, 16:21], caption = "Models 3-5 results")
 

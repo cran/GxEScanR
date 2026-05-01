@@ -1,13 +1,16 @@
 Package: GxEScanR
 Type: Package
 Title: Run GWAS/GWEIS Scans Using Binary Dosage Files
-Version: 2.0.2
-Date: 2020-10-02
+Version: 3.0.0
 Authors@R: 
     c(person(given = "John",
              family = "Morrison",
              role = c("aut", "cre"),
              email = "jmorr@usc.edu"),
+      person(given = "W. James",
+             family = "Gauderman",
+             role = "aut",
+             email = "jimg@usc.edu"),
       person(given = "NCI",
              role = "fnd",
              comment = "CA196559"),
@@ -25,21 +28,22 @@ Description: Tools to run genome-wide association study (GWAS) and
   data stored in a binary dosage file. The user provides a data frame with
   the subject's covariate data and the information about the binary dosage
   file returned by the BinaryDosage::getbdinfo() routine.
+Suggests: testthat (>= 2.1.0), knitr, rmarkdown
+VignetteBuilder: knitr
 License: GPL-3
 Encoding: UTF-8
 Language: en-US
-Imports: Rcpp (>= 1.0.4), prodlim
-LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 7.1.1
-Suggests: BinaryDosage, testthat (>= 2.1.0), covr, knitr, rmarkdown
-VignetteBuilder: knitr
-NeedsCompilation: yes
-Packaged: 2020-10-02 18:22:38 UTC; jbike_000
+RoxygenNote: 7.3.3
+Depends: R (>= 3.5.0)
+Imports: lsReg, BinaryDosage
+NeedsCompilation: no
+Packaged: 2026-04-30 21:54:02 UTC; jmorr
 Author: John Morrison [aut, cre],
+  W. James Gauderman [aut],
   NCI [fnd] (CA196559),
   NCI [fnd] (CA201407),
   NIEHS [fnd] (ES007048),
   NHLBI [fnd] (HL115606)
 Maintainer: John Morrison <jmorr@usc.edu>
 Repository: CRAN
-Date/Publication: 2020-10-02 21:52:09 UTC
+Date/Publication: 2026-05-01 16:40:12 UTC

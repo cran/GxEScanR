@@ -14,90 +14,104 @@
 
 <title>Using GxEScanR</title>
 
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
   }
 });
 </script>
 
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
-<style type="text/css">code{white-space: pre;}</style>
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -106,13 +120,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -120,6 +141,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -318,734 +340,481 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Using GxEScanR</h1>
 
 
-<div id="TOC">
-<ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#example-files">Example Files</a></li>
-<li><a href="#examples">Examples</a><ul>
-<li><a href="#linear-regression-gwas">Linear Regression GWAS</a></li>
-<li><a href="#linear-regression-gweis">Linear Regression GWEIS</a></li>
-<li><a href="#logistic-regression-gwas">Logistic Regression GWAS</a></li>
-<li><a href="#logistic-regression-gweis">Logistic Regression GWEIS</a><ul>
-<li><a href="#logistic-regression-gweis-with-binary-covariate">Logistic Regression GWEIS with Binary Covariate</a></li>
-<li><a href="#logistic-regression-gweis-with-a-continuous-covariate">Logistic Regression GWEIS with a Continuous Covariate</a></li>
-</ul></li>
-</ul></li>
-</ul>
-</div>
 
-<p>This vignette shows some examples of using GxEScanR to perform genome-wide association study (GWAS) and genome-wide by environment interaction study (GWEIS) scans using all the options available to the user.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(GxEScanR)</span></code></pre></div>
-<div id="introduction" class="section level1">
-<h1>Introduction</h1>
-<p>With growing number of SNPs that can be imputed it is necessary to have software that can efficiently perform GWAS and GWEIS scans. GxEScanR can do this using files that were saved in the BinaryDosage format. The BinaryDosage package can convert VCF and GEN files into the BinaryDosage format. The BinaryDosage format was designed to keep the file with the genetic data small with fast read times. GxEScanR uses this and efficient large scale regression routines to perform GWAS and GWEIS scans quickly.</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>GxEScanR is designed to efficiently run genome-wide association study
+(GWAS) and genome-wide by environment interaction study (GWEIS) scans
+using imputed genotypes stored in the BinaryDosage format. The phenotype
+to be analyzed can either be a continuous or binary trait. The GWEIS
+scan performs multiple tests that can be used in two-step methods.</p>
 </div>
-<div id="example-files" class="section level1">
-<h1>Example Files</h1>
-<p>The examples below use three sample files. The first contains a data frame that has subject data. The second file is a genetic data file in the BinaryDosage format. The last file contains the information returned by the BinaryDosage::getbdinfo routine that returns information about the binary dosage file that makes reading it fast.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>covdatafile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;covdata.rds&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;GxEScanR&quot;</span>)</span>
-<span id="cb2-2"><a href="#cb2-2"></a>covdata &lt;-<span class="st"> </span><span class="kw">readRDS</span>(covdatafile)</span></code></pre></div>
-<table>
-<caption>First 5 Subjects</caption>
-<thead>
-<tr class="header">
-<th align="left">sid</th>
-<th align="right">y</th>
-<th align="right">e</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">I1</td>
-<td align="right">0</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">I2</td>
-<td align="right">0</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">I3</td>
-<td align="right">0</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">I4</td>
-<td align="right">0</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">I5</td>
-<td align="right">0</td>
-<td align="right">0</td>
-</tr>
-</tbody>
-</table>
-<p>To load the binary dosage information file, it is necessary to update the file name since the file has been moved from its original location during the installation process. The following loads the binary dosage information and updates the file name.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>bdinfofile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;pdata_4_1.bdinfo&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;GxEScanR&quot;</span>)</span>
-<span id="cb3-2"><a href="#cb3-2"></a>bdinfo &lt;-<span class="st"> </span><span class="kw">readRDS</span>(bdinfofile)</span>
-<span id="cb3-3"><a href="#cb3-3"></a>bdinfo<span class="op">$</span>filename &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;pdata_4_1.bdose&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;GxEScanR&quot;</span>)</span></code></pre></div>
-<table>
-<caption>Models Fit</caption>
-<thead>
-<tr class="header">
-<th align="left">model</th>
-<th align="left">outcome</th>
-<th align="left">predictors</th>
-<th align="left">subjects</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">D|E,G</td>
-<td align="left">Phenotype</td>
-<td align="left">All covariates, gene</td>
-<td align="left">All</td>
-</tr>
-<tr class="even">
-<td align="left">D|E,G,GxE</td>
-<td align="left">Phenotype</td>
-<td align="left">All covariates, gene, gene x last covariate</td>
-<td align="left">All</td>
-</tr>
-<tr class="odd">
-<td align="left">E|G</td>
-<td align="left">Last covariate</td>
-<td align="left">All other covariates, gene</td>
-<td align="left">All</td>
-</tr>
-<tr class="even">
-<td align="left">E|G,D=1, case only</td>
-<td align="left">Last covariate</td>
-<td align="left">All other covariates, gene</td>
-<td align="left">Cases</td>
-</tr>
-<tr class="odd">
-<td align="left">E|G,D=0 control only</td>
-<td align="left">Last covariate</td>
-<td align="left">All other covariates, gene</td>
-<td align="left">Controls</td>
-</tr>
-</tbody>
-</table>
+<div id="notation-and-models" class="section level2">
+<h2>Notation and Models</h2>
+<p>There are five models that can be fit using GxEScanR when running a
+GWEIS, plus one that must be fit before running the GWEIS.</p>
+<p><span class="math inline">\(Y\)</span> represents the outcome or
+phenotype</p>
+<p><span class="math inline">\(X\)</span> represents the confounding
+covariates</p>
+<p><span class="math inline">\(E\)</span> represents the covariate that
+will have its genetic interaction tested</p>
+<p><span class="math inline">\(G\)</span> represents the genetic
+data</p>
+<p><span class="math inline">\(\beta\)</span> represents the effect
+estimate that will be fitted in the model</p>
+<div id="model-0---environment-only-model" class="section level3">
+<h3>Model 0 - Environment-only Model</h3>
+<p>This model contains the phenotype, confounding covariates, and the
+interaction covariate. It must be fit prior to running the GWEIS using
+the glm() routine.</p>
+<p><span class="math display">\[Y = \beta_X X + \beta_E E\]</span></p>
 </div>
-<div id="examples" class="section level1">
-<h1>Examples</h1>
-<div id="linear-regression-gwas" class="section level2">
-<h2>Linear Regression GWAS</h2>
-<p>The simplest scan to do is a linear regression GWAS. The following model is first when doing a linear regression GWAS.</p>
-<table>
-<caption>Model Fit</caption>
-<thead>
-<tr class="header">
-<th align="left">model</th>
-<th align="left">outcome</th>
-<th align="left">predictors</th>
-<th align="left">subjects</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">D|E,G</td>
-<td align="left">Phenotype</td>
-<td align="left">All covariates, gene</td>
-<td align="left">All</td>
-</tr>
-</tbody>
-</table>
-<p>In the example data set, the phenotype, y, is coded 0,1. When GxEScanR sees the phenotype codes this way it assumes the outcome is binary and uses logistic regression. To perform a linear regression GWAS the binary option needs to be set to FALSE. The following shows how to do a linear GWAS along with the results.</p>
-<p>The routine outputs the number of subjects used in the analysis and returns a data frame with the results.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>lingwas1 &lt;-<span class="st"> </span><span class="kw">gwas</span>(<span class="dt">data =</span> covdata,</span>
-<span id="cb4-2"><a href="#cb4-2"></a>                 <span class="dt">bdinfo =</span> bdinfo,</span>
-<span id="cb4-3"><a href="#cb4-3"></a>                 <span class="dt">binary =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="co">#&gt; [1] &quot;200 subjects have complete data&quot;</span></span></code></pre></div>
-<table>
-<caption>Linear Regression GWAS</caption>
-<thead>
-<tr class="header">
-<th align="left">snp</th>
-<th align="right">betag</th>
-<th align="right">lrtg</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">1:10001</td>
-<td align="right">0.1605708</td>
-<td align="right">9.0532054</td>
-</tr>
-<tr class="even">
-<td align="left">1:10002</td>
-<td align="right">-0.0220380</td>
-<td align="right">0.1219035</td>
-</tr>
-<tr class="odd">
-<td align="left">1:10003</td>
-<td align="right">-0.0732687</td>
-<td align="right">1.3812032</td>
-</tr>
-<tr class="even">
-<td align="left">1:10004</td>
-<td align="right">0.0326160</td>
-<td align="right">0.2355224</td>
-</tr>
-<tr class="odd">
-<td align="left">1:10005</td>
-<td align="right">0.0627953</td>
-<td align="right">1.2072107</td>
-</tr>
-</tbody>
-</table>
-<p>The output can be redirected to output file that produces a plain test version of the results in a tab delimited file that can be read into R using the read.table routine. In this case, the gwas routine returns a value of 0.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>outfile &lt;-<span class="st"> </span><span class="kw">tempfile</span>()</span>
-<span id="cb5-2"><a href="#cb5-2"></a>lingwas2 &lt;-<span class="st"> </span><span class="kw">gwas</span>(<span class="dt">data =</span> covdata,</span>
-<span id="cb5-3"><a href="#cb5-3"></a>                 <span class="dt">bdinfo =</span> bdinfo,</span>
-<span id="cb5-4"><a href="#cb5-4"></a>                 <span class="dt">outfile =</span> outfile,</span>
-<span id="cb5-5"><a href="#cb5-5"></a>                 <span class="dt">binary =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb5-6"><a href="#cb5-6"></a><span class="co">#&gt; [1] &quot;200 subjects have complete data&quot;</span></span>
-<span id="cb5-7"><a href="#cb5-7"></a>lingwas2</span>
-<span id="cb5-8"><a href="#cb5-8"></a><span class="co">#&gt; [1] 0</span></span>
-<span id="cb5-9"><a href="#cb5-9"></a>lingwas2 &lt;-<span class="st"> </span><span class="kw">read.table</span>(outfile, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">sep =</span><span class="st">&#39;</span><span class="ch">\t</span><span class="st">&#39;</span>)</span></code></pre></div>
-<table>
-<caption>Linear Regression GWAS</caption>
-<thead>
-<tr class="header">
-<th align="left">SNPID</th>
-<th align="right">betag</th>
-<th align="right">lrtg</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">1:10001</td>
-<td align="right">0.1605708</td>
-<td align="right">9.0532054</td>
-</tr>
-<tr class="even">
-<td align="left">1:10002</td>
-<td align="right">-0.0220380</td>
-<td align="right">0.1219035</td>
-</tr>
-<tr class="odd">
-<td align="left">1:10003</td>
-<td align="right">-0.0732687</td>
-<td align="right">1.3812032</td>
-</tr>
-<tr class="even">
-<td align="left">1:10004</td>
-<td align="right">0.0326160</td>
-<td align="right">0.2355224</td>
-</tr>
-<tr class="odd">
-<td align="left">1:10005</td>
-<td align="right">0.0627953</td>
-<td align="right">1.2072107</td>
-</tr>
-</tbody>
-</table>
+<div id="model-1---gene-only-model" class="section level3">
+<h3>Model 1 - Gene-only Model</h3>
+<p>This model contains all the values from the environment-only model
+and adds the genetic data.</p>
+<p><span class="math display">\[Y = \beta_X X + \beta_E E + \beta_G
+G\]</span></p>
+<p><span class="math inline">\(\beta_G\)</span> is the only term tested
+in this model and is represented by <code>bg_ge</code> in the
+output.</p>
 </div>
-<div id="linear-regression-gweis" class="section level2">
-<h2>Linear Regression GWEIS</h2>
-<p>The gweis routine takes the same parameters as the gwas function but performs additional tests. The models fit for a linear regression GWAS are.</p>
-<table>
-<caption>Models Fit</caption>
-<thead>
-<tr class="header">
-<th align="left">model</th>
-<th align="left">outcome</th>
-<th align="left">predictors</th>
-<th align="left">subjects</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">D|E,G</td>
-<td align="left">Phenotype</td>
-<td align="left">All covariates, gene</td>
-<td align="left">All</td>
-</tr>
-<tr class="even">
-<td align="left">D|E,G,GxE</td>
-<td align="left">Phenotype</td>
-<td align="left">All covariates, gene, gene x last covariate</td>
-<td align="left">All</td>
-</tr>
-</tbody>
-</table>
-<p>Note: When doing a GWEIS the interaction covariate is in the last column of the subject data frame.</p>
-<p>In this test the minmaf option was used. When minmaf is specified the minor allele for a SNP must exceed minmaf to be test. Notice that only 5 SNPs are in the output data frame. This is because one of the SNPs has a minor allele frequency below 0.2.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>lingweis1 &lt;-<span class="st"> </span><span class="kw">gweis</span>(<span class="dt">data =</span> covdata,</span>
-<span id="cb6-2"><a href="#cb6-2"></a>                   <span class="dt">bdinfo =</span> bdinfo,</span>
-<span id="cb6-3"><a href="#cb6-3"></a>                   <span class="dt">minmaf =</span> <span class="fl">0.2</span>,</span>
-<span id="cb6-4"><a href="#cb6-4"></a>                   <span class="dt">binary =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="co">#&gt; [1] &quot;200 subjects have complete data&quot;</span></span></code></pre></div>
-<table>
-<caption>Linear Regression GWEIS</caption>
-<thead>
-<tr class="header">
-<th align="left">snp</th>
-<th align="right">betadg</th>
-<th align="right">lrtdg</th>
-<th align="right">betagxe</th>
-<th align="right">lrtgxe</th>
-<th align="right">lrt2df</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">1:10001</td>
-<td align="right">0.1605708</td>
-<td align="right">9.0532054</td>
-<td align="right">0.0777308</td>
-<td align="right">0.5402899</td>
-<td align="right">9.593495</td>
-</tr>
-<tr class="even">
-<td align="left">1:10002</td>
-<td align="right">-0.0220380</td>
-<td align="right">0.1219035</td>
-<td align="right">0.1484303</td>
-<td align="right">1.3479068</td>
-<td align="right">1.469810</td>
-</tr>
-<tr class="odd">
-<td align="left">1:10004</td>
-<td align="right">0.0326160</td>
-<td align="right">0.2355224</td>
-<td align="right">0.1968781</td>
-<td align="right">2.0769149</td>
-<td align="right">2.312437</td>
-</tr>
-<tr class="even">
-<td align="left">1:10005</td>
-<td align="right">0.0627953</td>
-<td align="right">1.2072107</td>
-<td align="right">-0.0442079</td>
-<td align="right">0.1401332</td>
-<td align="right">1.347344</td>
-</tr>
-</tbody>
-</table>
-<p>If the user is interested in see what happened to SNPs that weren’t included in the data frame, the skipfile option can be used. The skipfile value is the name of a file to write the skipped SNPs to. The skipfile option can be used along with the outfile option. The skip file is in the same format as the output file. Below is an example using the skipfile option.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>skipfile =<span class="st"> </span><span class="kw">tempfile</span>()</span>
-<span id="cb7-2"><a href="#cb7-2"></a>lingweis2 &lt;-<span class="st"> </span><span class="kw">gweis</span>(<span class="dt">data =</span> covdata,</span>
-<span id="cb7-3"><a href="#cb7-3"></a>                   <span class="dt">bdinfo =</span> bdinfo,</span>
-<span id="cb7-4"><a href="#cb7-4"></a>                   <span class="dt">skipfile =</span> skipfile,</span>
-<span id="cb7-5"><a href="#cb7-5"></a>                   <span class="dt">minmaf =</span> <span class="fl">0.2</span>,</span>
-<span id="cb7-6"><a href="#cb7-6"></a>                   <span class="dt">binary =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb7-7"><a href="#cb7-7"></a><span class="co">#&gt; [1] &quot;200 subjects have complete data&quot;</span></span></code></pre></div>
-<table>
-<caption>Linear Regression GWEIS</caption>
-<thead>
-<tr class="header">
-<th align="left">snp</th>
-<th align="right">betadg</th>
-<th align="right">lrtdg</th>
-<th align="right">betagxe</th>
-<th align="right">lrtgxe</th>
-<th align="right">lrt2df</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">1:10001</td>
-<td align="right">0.1605708</td>
-<td align="right">9.0532054</td>
-<td align="right">0.0777308</td>
-<td align="right">0.5402899</td>
-<td align="right">9.593495</td>
-</tr>
-<tr class="even">
-<td align="left">1:10002</td>
-<td align="right">-0.0220380</td>
-<td align="right">0.1219035</td>
-<td align="right">0.1484303</td>
-<td align="right">1.3479068</td>
-<td align="right">1.469810</td>
-</tr>
-<tr class="odd">
-<td align="left">1:10004</td>
-<td align="right">0.0326160</td>
-<td align="right">0.2355224</td>
-<td align="right">0.1968781</td>
-<td align="right">2.0769149</td>
-<td align="right">2.312437</td>
-</tr>
-<tr class="even">
-<td align="left">1:10005</td>
-<td align="right">0.0627953</td>
-<td align="right">1.2072107</td>
-<td align="right">-0.0442079</td>
-<td align="right">0.1401332</td>
-<td align="right">1.347344</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>knitr<span class="op">::</span><span class="kw">kable</span>(skipsnps, <span class="dt">caption =</span> <span class="st">&quot;Skipped SNPs&quot;</span>)</span></code></pre></div>
-<table>
-<caption>Skipped SNPs</caption>
-<thead>
-<tr class="header">
-<th align="left">SNPID</th>
-<th align="right">reasondg</th>
-<th align="right">reasongxe</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">1:10003</td>
-<td align="right">2</td>
-<td align="right">2</td>
-</tr>
-</tbody>
-</table>
-<p>The following table lists the reasons SNPs were skipped given the skipped value.</p>
-<table>
-<caption>Skipped Reasons</caption>
-<thead>
-<tr class="header">
-<th align="right">code</th>
-<th align="left">reason</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">1</td>
-<td align="left">Excluded by user</td>
-</tr>
-<tr class="even">
-<td align="right">2</td>
-<td align="left">Minor allele frequency below threshold</td>
-</tr>
-<tr class="odd">
-<td align="right">3</td>
-<td align="left">X matrix singular</td>
-</tr>
-<tr class="even">
-<td align="right">4</td>
-<td align="left">Singular matrix updating beta top</td>
-</tr>
-<tr class="odd">
-<td align="right">5</td>
-<td align="left">Singular matrix updating beta bottom</td>
-</tr>
-<tr class="even">
-<td align="right">6</td>
-<td align="left">Maximum iterations exceeded</td>
-</tr>
-</tbody>
-</table>
+<div id="model-2---gxe-interaction-model" class="section level3">
+<h3>Model 2 - GxE Interaction Model</h3>
+<p>This model contains all the values from the gene-only model and adds
+the gene-environment interaction term.</p>
+<p><span class="math display">\[Y = \beta_X X + \beta_E E + \beta_G G +
+\beta_{GxE} GE\]</span></p>
+<p><span class="math inline">\(\beta_G\)</span> and <span class="math inline">\(\beta_{GxE}\)</span> are both tested for this
+model as well as a joint test for both terms. They are represented by
+<code>bg_gxe</code>, <code>bgxe</code>, and <code>joint</code>,
+respectively, in the output.</p>
 </div>
-<div id="logistic-regression-gwas" class="section level2">
-<h2>Logistic Regression GWAS</h2>
-<p>In this example, the phenotype is coded (0,1). The gwas and gweis routines check for this an will run logistic regressions if the outcome is coded (0,1) unless binary is set to FALSE. If the use wants to make sure the outcome is coded (0,1), the user may set binary to TRUE. In this case, if the outcome is not coded (0,1) an error is produced.</p>
-<p>The following model is fit when doing a logistic regression GWAS.</p>
-<table>
-<caption>Model Fit</caption>
-<thead>
-<tr class="header">
-<th align="left">model</th>
-<th align="left">outcome</th>
-<th align="left">predictors</th>
-<th align="left">subjects</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">D|E,G</td>
-<td align="left">Phenotype</td>
-<td align="left">All covariates, gene</td>
-<td align="left">All</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>loggwas1 &lt;-<span class="st"> </span><span class="kw">gwas</span>(<span class="dt">data =</span> covdata,</span>
-<span id="cb9-2"><a href="#cb9-2"></a>                 <span class="dt">bdinfo =</span> bdinfo,</span>
-<span id="cb9-3"><a href="#cb9-3"></a>                 <span class="dt">blksize =</span> <span class="dv">2</span>,</span>
-<span id="cb9-4"><a href="#cb9-4"></a>                 <span class="dt">binary =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="co">#&gt; [1] &quot;200 subjects have complete data&quot;</span></span></code></pre></div>
-<table>
-<caption>Logistic Regression GWAS</caption>
-<thead>
-<tr class="header">
-<th align="left">snp</th>
-<th align="right">betag</th>
-<th align="right">lrtg</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">1:10001</td>
-<td align="right">0.7129</td>
-<td align="right">9.0230</td>
-</tr>
-<tr class="even">
-<td align="left">1:10002</td>
-<td align="right">-0.0943</td>
-<td align="right">0.1219</td>
-</tr>
-<tr class="odd">
-<td align="left">1:10003</td>
-<td align="right">-0.3144</td>
-<td align="right">1.3777</td>
-</tr>
-<tr class="even">
-<td align="left">1:10004</td>
-<td align="right">0.1397</td>
-<td align="right">0.2356</td>
-</tr>
-<tr class="odd">
-<td align="left">1:10005</td>
-<td align="right">0.2680</td>
-<td align="right">1.2003</td>
-</tr>
-</tbody>
-</table>
-<p>In this example, the option blksize is used. When an analysis is run several SNPs are read in at one time. This saves disk time. The following are the default values for given the number of subjects. These values were chosen to keep the program running using less than 4GB of RAM. The user is allowed to specify a value up to twice the default value. Little performance gain is seen going with larger values. If the user enters 0 for blksize, the default value is used.</p>
-<table>
-<caption>Default blksize</caption>
-<thead>
-<tr class="header">
-<th align="left">subjects</th>
-<th align="right">blksize</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">less than 10,000</td>
-<td align="right">5000</td>
-</tr>
-<tr class="even">
-<td align="left">10,000 to 24,999</td>
-<td align="right">2000</td>
-</tr>
-<tr class="odd">
-<td align="left">25,000 to 49,999</td>
-<td align="right">1000</td>
-</tr>
-<tr class="even">
-<td align="left">50,000 to 99,999</td>
-<td align="right">500</td>
-</tr>
-<tr class="odd">
-<td align="left">100,000 to 249,999</td>
-<td align="right">200</td>
-</tr>
-<tr class="even">
-<td align="left">250,000 to 499,999</td>
-<td align="right">100</td>
-</tr>
-<tr class="odd">
-<td align="left">500,000 or greater</td>
-<td align="right">50</td>
-</tr>
-</tbody>
-</table>
+<div id="model-3---eg-model" class="section level3">
+<h3>Model 3 - EG Model</h3>
+<p>This model tests for a relationship between the environmental value
+of interest and the gene. If <span class="math inline">\(E\)</span> is
+coded 0,1, a logistic model is fitted; otherwise a linear model is
+fitted.</p>
+<p><span class="math display">\[E = \beta_X X + \beta_G G\]</span></p>
+<p><span class="math inline">\(\beta_G\)</span> is tested in this model
+and is represented by <code>bg_eg</code> in the output.</p>
 </div>
-<div id="logistic-regression-gweis" class="section level2">
-<h2>Logistic Regression GWEIS</h2>
-<p>A logistic regression GWEIS fits an additional 4 models that produce 7 more tests. 3 of these models use the the interaction covariate as the outcome. The following show all the models fit in a logistic regression GWEIS.</p>
-<p>The following model is fit when doing a logistic regression GWAS.</p>
+<div id="model-4---case-only-model" class="section level3">
+<h3>Model 4 - Case-only Model</h3>
+<p>This model is the same as model 3 except it is run on cases only.
+<span class="math inline">\(\beta_G\)</span> is tested and is
+represented by <code>bg_case</code> in the output. This model can only
+be run on a dichotomous phenotype.</p>
+</div>
+<div id="model-5---control-only-model" class="section level3">
+<h3>Model 5 - Control-only Model</h3>
+<p>This model is the same as model 3 except it is run on controls only.
+<span class="math inline">\(\beta_G\)</span> is tested and is
+represented by <code>bg_ctrl</code> in the output. This model can only
+be run on a dichotomous phenotype.</p>
+</div>
+</div>
+<div id="steps-to-run-a-gweis" class="section level2">
+<h2>Steps to Run a GWEIS</h2>
+<p>There are five steps to running a GWEIS using GxEScanR:</p>
+<ol style="list-style-type: decimal">
+<li>Preparing the Data (Genetic Data + Subject Data)</li>
+<li>Fitting the Base Model</li>
+<li>Allocating Memory for the GWEIS</li>
+<li>Running the GWEIS</li>
+<li>Processing the Results</li>
+</ol>
+</div>
+<div id="step-1-preparing-the-data" class="section level2">
+<h2>Step 1: Preparing the Data</h2>
+<div id="genetic-data" class="section level3">
+<h3>Genetic Data</h3>
+<p>GxEScanR uses data stored in the BinaryDosage format. The
+BinaryDosage package converts files from the VCF format to the
+BinaryDosage format using the <code>vcftobd()</code> routine. The
+<code>getbdinfo()</code> routine is then used to load the information
+about the BinaryDosage file needed to run the GWEIS.</p>
+<p>The following example shows how to convert a VCF file to BinaryDosage
+format. Note that <code>vcftobd()</code> requires the
+<code>vcfppR</code> package.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>vcffile <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;gendata.vcf.gz&quot;</span>, <span class="at">package =</span> <span class="st">&quot;GxEScanR&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>exampledir <span class="ot">&lt;-</span> <span class="fu">tempdir</span>()</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>bdosefile <span class="ot">&lt;-</span> <span class="fu">file.path</span>(exampledir, <span class="st">&quot;gendata.bdose&quot;</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>BinaryDosage<span class="sc">::</span><span class="fu">vcftobd</span>(<span class="at">vcffile =</span> vcffile, <span class="at">bdose_file =</span> bdosefile)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>bdinfo <span class="ot">&lt;-</span> BinaryDosage<span class="sc">::</span><span class="fu">getbdinfo</span>(bdosefile)</span></code></pre></div>
+<p>This vignette uses a pre-converted BinaryDosage file included with
+the package.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>bdosefile <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;gendata.bdose&quot;</span>, <span class="at">package =</span> <span class="st">&quot;GxEScanR&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>bdinfo <span class="ot">&lt;-</span> BinaryDosage<span class="sc">::</span><span class="fu">getbdinfo</span>(bdosefile)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>exampledir <span class="ot">&lt;-</span> <span class="fu">tempdir</span>()</span></code></pre></div>
+</div>
+<div id="subject-data" class="section level3">
+<h3>Subject Data</h3>
+<p>The subject data consists of subject IDs used to link the genetic
+data, and the phenotype and covariates used in the GWEIS. The data
+included with GxEScanR has two phenotypes (one continuous, one
+dichotomous) and two covariates (x1 and x2).</p>
+<p><strong>Important:</strong> All values for phenotypes and covariates
+must be numeric; factors are not allowed.</p>
+<p><strong>Important:</strong> All subject IDs must be character
+values.</p>
+<p><strong>Important:</strong> When using a dichotomous phenotype, it
+must be coded 0,1.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>subjectfile <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;subdata.rds&quot;</span>, <span class="at">package =</span> <span class="st">&quot;GxEScanR&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>subjectdata <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(subjectfile)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">head</span>(subjectdata)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt;      subid y_linear y_logistic x1 x2</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; 1 subject1 7.939120          1  0  0</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; 2 subject2 5.965786          0  1  0</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; 3 subject3 3.047969          0  1  0</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 4 subject4 1.173026          0  0  0</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; 5 subject5 7.691592          1  1  0</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; 6 subject6 3.931234          0  1  0</span></span></code></pre></div>
+</div>
+</div>
+<div id="step-2-fitting-the-base-model" class="section level2">
+<h2>Step 2: Fitting the Base Model</h2>
+<p>The base model is fit using glm() using data that contains only the
+subject IDs, phenotype, and covariates of interest — no genetic
+data.</p>
+<p>It is important to:</p>
+<ul>
+<li>Remove subjects with missing data.</li>
+<li>Keep only subjects who have genetic data (listed in
+<code>bdinfo$samples</code>).</li>
+<li>Keep the subject IDs in the data frame, as they are used to match
+genetic data to the correct phenotype and covariates.</li>
+</ul>
+<p>The formula passed to glm() must list the covariate whose interaction
+with the genetic data is being tested <strong>last</strong>. In this
+example we test the interaction with x1, so the formula is
+<code>y ~ x2 + x1</code>.</p>
+<div id="continuous-phenotype" class="section level3">
+<h3>Continuous Phenotype</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Remove y_logistic from the subject data</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>lineardata <span class="ot">&lt;-</span> subjectdata[, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">5</span>)]</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># Keep only subjects with complete data</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>lineardata <span class="ot">&lt;-</span> lineardata[<span class="fu">complete.cases</span>(lineardata), ]</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co"># Keep only subjects with genetic data</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>lineardata <span class="ot">&lt;-</span> lineardata[lineardata<span class="sc">$</span>subid <span class="sc">%in%</span> bdinfo<span class="sc">$</span>samples<span class="sc">$</span>sid, ]</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co"># Fit the linear model</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>linearmodel <span class="ot">&lt;-</span> <span class="fu">glm</span>(y_linear <span class="sc">~</span> x2 <span class="sc">+</span> x1, <span class="at">data =</span> lineardata)</span></code></pre></div>
+</div>
+<div id="dichotomous-phenotype" class="section level3">
+<h3>Dichotomous Phenotype</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Remove y_linear from the subject data</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>logisticdata <span class="ot">&lt;-</span> subjectdata[, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>)]</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Keep only subjects with complete data</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>logisticdata <span class="ot">&lt;-</span> logisticdata[<span class="fu">complete.cases</span>(logisticdata), ]</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co"># Keep only subjects with genetic data</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>logisticdata <span class="ot">&lt;-</span> logisticdata[logisticdata<span class="sc">$</span>subid <span class="sc">%in%</span> bdinfo<span class="sc">$</span>samples<span class="sc">$</span>sid, ]</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co"># Fit the logistic model</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>logisticmodel <span class="ot">&lt;-</span> <span class="fu">glm</span>(y_logistic <span class="sc">~</span> x2 <span class="sc">+</span> x1, <span class="at">family =</span> binomial, <span class="at">data =</span> logisticdata)</span></code></pre></div>
+</div>
+</div>
+<div id="step-3-allocating-memory-for-the-gweis" class="section level2">
+<h2>Step 3: Allocating Memory for the GWEIS</h2>
+<p>Memory must be allocated before running the GWEIS using
+<code>gweis.mem()</code>. This pre-computation makes the scan
+substantially faster. Pass the fitted base model, the subject IDs from
+that model’s data, and the list of tests to perform.</p>
+<p>Typical test sets:</p>
+<ul>
+<li><strong>Continuous phenotype:</strong> <code>&quot;bg_ge&quot;</code>,
+<code>&quot;bg_gxe&quot;</code>, <code>&quot;bgxe&quot;</code>, <code>&quot;joint&quot;</code></li>
+<li><strong>Dichotomous phenotype:</strong> <code>&quot;bg_ge&quot;</code>,
+<code>&quot;bg_gxe&quot;</code>, <code>&quot;bgxe&quot;</code>, <code>&quot;joint&quot;</code>,
+<code>&quot;bg_eg&quot;</code>, <code>&quot;bg_case&quot;</code>,
+<code>&quot;bg_ctrl&quot;</code></li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Continuous outcome</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>linearmem <span class="ot">&lt;-</span> <span class="fu">gweis.mem</span>(<span class="at">gemdl =</span> linearmodel,</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>                       <span class="at">subids =</span> lineardata<span class="sc">$</span>subid,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>                       <span class="at">tests =</span> <span class="fu">c</span>(<span class="st">&quot;bg_ge&quot;</span>, <span class="st">&quot;bg_gxe&quot;</span>, <span class="st">&quot;bgxe&quot;</span>, <span class="st">&quot;joint&quot;</span>))</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co"># Dichotomous outcome</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>logisticmem <span class="ot">&lt;-</span> <span class="fu">gweis.mem</span>(<span class="at">gemdl =</span> logisticmodel,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>                         <span class="at">subids =</span> logisticdata<span class="sc">$</span>subid,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>                         <span class="at">tests =</span> <span class="fu">c</span>(<span class="st">&quot;bg_ge&quot;</span>, <span class="st">&quot;bg_gxe&quot;</span>, <span class="st">&quot;bgxe&quot;</span>, <span class="st">&quot;joint&quot;</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>                                   <span class="st">&quot;bg_eg&quot;</span>, <span class="st">&quot;bg_case&quot;</span>, <span class="st">&quot;bg_ctrl&quot;</span>))</span></code></pre></div>
+</div>
+<div id="step-4-running-the-gweis" class="section level2">
+<h2>Step 4: Running the GWEIS</h2>
+<p>Pass the memory object from <code>gweis.mem()</code>, the
+<code>bdinfo</code> object, a vector of SNP indices or IDs to test, and
+an output file path to <code>rungweis()</code>. Results are written as a
+tab-delimited text file.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>snpindex <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(bdinfo<span class="sc">$</span>snps)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co"># Continuous outcome</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>linearresults <span class="ot">&lt;-</span> <span class="fu">file.path</span>(exampledir, <span class="st">&quot;linear.txt&quot;</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="fu">rungweis</span>(<span class="at">gweismem =</span> linearmem,</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>         <span class="at">bdinfo =</span> bdinfo,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>         <span class="at">snps =</span> snpindex,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>         <span class="at">outfilename =</span> linearresults)</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co"># Dichotomous outcome</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>logisticresults <span class="ot">&lt;-</span> <span class="fu">file.path</span>(exampledir, <span class="st">&quot;logistic.txt&quot;</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="fu">rungweis</span>(<span class="at">gweismem =</span> logisticmem,</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>         <span class="at">bdinfo =</span> bdinfo,</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>         <span class="at">snps =</span> snpindex,</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>         <span class="at">outfilename =</span> logisticresults)</span></code></pre></div>
+</div>
+<div id="step-5-processing-the-results" class="section level2">
+<h2>Step 5: Processing the Results</h2>
+<p>Read the output file with <code>read.table()</code>. The following
+describes the output columns, illustrated with the first three SNPs.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>lineardf <span class="ot">&lt;-</span> <span class="fu">read.table</span>(linearresults, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>logisticdf <span class="ot">&lt;-</span> <span class="fu">read.table</span>(logisticresults, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>)</span></code></pre></div>
+<div id="snp-information-and-allele-frequency" class="section level3">
+<h3>SNP Information and Allele Frequency</h3>
+<p>Every row contains SNP ID (<code>snpid</code>), chromosome
+(<code>chr</code>), position (<code>loc</code>), reference allele
+(<code>ref</code>), alternate allele (<code>alt</code>), and alternate
+allele frequency (<code>aaf</code>). For a dichotomous outcome,
+<code>aaf_case</code> and <code>aaf_ctrl</code> are also included.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(lineardf[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>], <span class="at">caption =</span> <span class="st">&quot;SNP information — continuous outcome&quot;</span>)</span></code></pre></div>
 <table>
-<caption>Models Fit</caption>
+<caption>SNP information — continuous outcome</caption>
 <thead>
 <tr class="header">
-<th align="left">model</th>
-<th align="left">outcome</th>
-<th align="left">predictors</th>
-<th align="left">subjects</th>
+<th align="left">snpid</th>
+<th align="left">chr</th>
+<th align="right">loc</th>
+<th align="left">ref</th>
+<th align="left">alt</th>
+<th align="right">aaf</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">D|E,G</td>
-<td align="left">Phenotype</td>
-<td align="left">All covariates, gene</td>
-<td align="left">All</td>
+<td align="left">chr22:10527916:T:G</td>
+<td align="left">chr22</td>
+<td align="right">10527916</td>
+<td align="left">T</td>
+<td align="left">G</td>
+<td align="right">0.6494005</td>
 </tr>
 <tr class="even">
-<td align="left">D|E,G,GxE</td>
-<td align="left">Phenotype</td>
-<td align="left">All covariates, gene, gene x last covariate</td>
-<td align="left">All</td>
+<td align="left">chr22:10648779:G:T</td>
+<td align="left">chr22</td>
+<td align="right">10648779</td>
+<td align="left">G</td>
+<td align="left">T</td>
+<td align="right">0.0854975</td>
 </tr>
 <tr class="odd">
-<td align="left">E|G</td>
-<td align="left">Last covariate</td>
-<td align="left">All other covariates, gene</td>
-<td align="left">All</td>
-</tr>
-<tr class="even">
-<td align="left">E|G,D=1, case only</td>
-<td align="left">Last covariate</td>
-<td align="left">All other covariates, gene</td>
-<td align="left">Cases</td>
-</tr>
-<tr class="odd">
-<td align="left">E|G,D=0 control only</td>
-<td align="left">Last covariate</td>
-<td align="left">All other covariates, gene</td>
-<td align="left">Controls</td>
+<td align="left">chr22:10648794:G:A</td>
+<td align="left">chr22</td>
+<td align="right">10648794</td>
+<td align="left">G</td>
+<td align="left">A</td>
+<td align="right">0.0536727</td>
 </tr>
 </tbody>
 </table>
-<p>Note: When doing a GWEIS the interaction covariate is in the last column of the data frame.</p>
-<div id="logistic-regression-gweis-with-binary-covariate" class="section level3">
-<h3>Logistic Regression GWEIS with Binary Covariate</h3>
-<p>In the example subject data, the covariate is coded (0,1). In this case, the gweis routine will use logistic regression to fit the last 3 models.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>loggweis1 &lt;-<span class="st"> </span><span class="kw">gweis</span>(<span class="dt">data =</span> covdata,</span>
-<span id="cb10-2"><a href="#cb10-2"></a>                   <span class="dt">bdinfo =</span> bdinfo,</span>
-<span id="cb10-3"><a href="#cb10-3"></a>                   <span class="dt">snps =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>,</span>
-<span id="cb10-4"><a href="#cb10-4"></a>                   <span class="dt">binary =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb10-5"><a href="#cb10-5"></a><span class="co">#&gt; [1] &quot;200 subjects have complete data&quot;</span></span></code></pre></div>
-<table style="width:100%;">
-<caption>Logistic Regression GWEIS</caption>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(logisticdf[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>], <span class="at">caption =</span> <span class="st">&quot;SNP information — dichotomous outcome&quot;</span>)</span></code></pre></div>
+<table>
+<caption>SNP information — dichotomous outcome</caption>
 <colgroup>
-<col width="7%"></col>
-<col width="7%"></col>
-<col width="6%"></col>
-<col width="7%"></col>
-<col width="6%"></col>
-<col width="6%"></col>
-<col width="6%"></col>
-<col width="6%"></col>
-<col width="7%"></col>
-<col width="8%"></col>
-<col width="7%"></col>
-<col width="8%"></col>
-<col width="7%"></col>
+<col width="26%" />
+<col width="8%" />
+<col width="12%" />
+<col width="5%" />
+<col width="5%" />
+<col width="13%" />
+<col width="13%" />
+<col width="13%" />
 </colgroup>
 <thead>
 <tr class="header">
-<th align="left">snp</th>
-<th align="right">betadg</th>
-<th align="right">lrtdg</th>
-<th align="right">betagxe</th>
-<th align="right">lrtgxe</th>
-<th align="right">lrt2df</th>
-<th align="right">betaeg</th>
-<th align="right">lrteg</th>
-<th align="right">lrt3df</th>
-<th align="right">betacase</th>
-<th align="right">lrtcase</th>
-<th align="right">betactrl</th>
-<th align="right">lrtctrl</th>
+<th align="left">snpid</th>
+<th align="left">chr</th>
+<th align="right">loc</th>
+<th align="left">ref</th>
+<th align="left">alt</th>
+<th align="right">aaf</th>
+<th align="right">aaf_case</th>
+<th align="right">aaf_ctrl</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">1:10001</td>
-<td align="right">0.7129</td>
-<td align="right">9.0230</td>
-<td align="right">0.4931</td>
-<td align="right">0.9520</td>
-<td align="right">9.9750</td>
-<td align="right">0.4115</td>
-<td align="right">3.3606</td>
-<td align="right">13.3356</td>
-<td align="right">0.4290</td>
-<td align="right">2.0147</td>
-<td align="right">-0.0477</td>
-<td align="right">0.0147</td>
+<td align="left">chr22:10527916:T:G</td>
+<td align="left">chr22</td>
+<td align="right">10527916</td>
+<td align="left">T</td>
+<td align="left">G</td>
+<td align="right">0.6494005</td>
+<td align="right">0.6264272</td>
+<td align="right">0.6540861</td>
 </tr>
 <tr class="even">
-<td align="left">1:10002</td>
-<td align="right">-0.0943</td>
-<td align="right">0.1219</td>
-<td align="right">0.6508</td>
-<td align="right">1.3569</td>
-<td align="right">1.4789</td>
-<td align="right">0.0798</td>
-<td align="right">0.0910</td>
-<td align="right">1.5699</td>
-<td align="right">0.3882</td>
-<td align="right">1.1018</td>
-<td align="right">-0.2562</td>
-<td align="right">0.3735</td>
+<td align="left">chr22:10648779:G:T</td>
+<td align="left">chr22</td>
+<td align="right">10648779</td>
+<td align="left">G</td>
+<td align="left">T</td>
+<td align="right">0.0854975</td>
+<td align="right">0.0882864</td>
+<td align="right">0.0849287</td>
+</tr>
+<tr class="odd">
+<td align="left">chr22:10648794:G:A</td>
+<td align="left">chr22</td>
+<td align="right">10648794</td>
+<td align="left">G</td>
+<td align="left">A</td>
+<td align="right">0.0536727</td>
+<td align="right">0.0457573</td>
+<td align="right">0.0552871</td>
 </tr>
 </tbody>
 </table>
-<p>In this example the snps options was used. The snps option can either be a vector of indices indicating what SNPs to include or a list of SNPs by SNP ID. A vector of indices was used in this example.</p>
 </div>
-<div id="logistic-regression-gweis-with-a-continuous-covariate" class="section level3">
-<h3>Logistic Regression GWEIS with a Continuous Covariate</h3>
-<p>In the example subject data, the covariate is coded (0,1) which the gweis routine sees a binary covariate to make the routine do a linear regression 1 can be added to the interaction covariate. This will change the coding to (1,2) which the routine sees as a continuous covariate.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>covdata2 &lt;-<span class="st"> </span>covdata</span>
-<span id="cb11-2"><a href="#cb11-2"></a>covdata2<span class="op">$</span>e &lt;-<span class="st"> </span>covdata2<span class="op">$</span>e <span class="op">+</span><span class="st"> </span><span class="dv">1</span></span>
-<span id="cb11-3"><a href="#cb11-3"></a>loggweis2 &lt;-<span class="st"> </span><span class="kw">gweis</span>(<span class="dt">data =</span> covdata2,</span>
-<span id="cb11-4"><a href="#cb11-4"></a>                   <span class="dt">bdinfo =</span> bdinfo,</span>
-<span id="cb11-5"><a href="#cb11-5"></a>                   <span class="dt">snps =</span> <span class="kw">c</span>(<span class="st">&quot;1:10001&quot;</span>, <span class="st">&quot;1:10002&quot;</span>))</span>
-<span id="cb11-6"><a href="#cb11-6"></a><span class="co">#&gt; [1] &quot;200 subjects have complete data&quot;</span></span></code></pre></div>
-<table style="width:100%;">
-<caption>Logistic Regression GWEIS</caption>
+<div id="model-1-output-bg_ge" class="section level3">
+<h3>Model 1 Output: <code>bg_ge</code></h3>
+<p><code>bg_ge</code> is the <span class="math inline">\(\beta_G\)</span> estimate from model 1.
+<code>bg_ge_lrt</code> is the LRT 1 df chi-squared statistic for <span class="math inline">\(\beta_G = 0\)</span>. Output when
+<code>&quot;bg_ge&quot;</code> is in <code>tests</code>.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(lineardf[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">7</span><span class="sc">:</span><span class="dv">8</span>], <span class="at">caption =</span> <span class="st">&quot;Model 1 results&quot;</span>)</span></code></pre></div>
+<table>
+<caption>Model 1 results</caption>
+<thead>
+<tr class="header">
+<th align="right">bg_ge</th>
+<th align="right">bg_ge_lrt</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">-0.8900621</td>
+<td align="right">5.2558824</td>
+</tr>
+<tr class="even">
+<td align="right">-0.4766408</td>
+<td align="right">0.6737040</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.6481754</td>
+<td align="right">0.8070534</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="model-2-output-bg_gxe-bgxe-joint" class="section level3">
+<h3>Model 2 Output: <code>bg_gxe</code>, <code>bgxe</code>,
+<code>joint</code></h3>
+<ul>
+<li><code>bg_gxe</code> / <code>bg_gxe_lrt</code>: <span class="math inline">\(\beta_G\)</span> estimate and LRT from model 2.
+Output when <code>&quot;bg_gxe&quot;</code> is in <code>tests</code>.</li>
+<li><code>bgxe</code> / <code>bgxe_lrt</code>: <span class="math inline">\(\beta_{GxE}\)</span> estimate and LRT. Output when
+<code>&quot;bgxe&quot;</code> is in <code>tests</code>.</li>
+<li><code>joint_lrt</code>: 2 df LRT for <span class="math inline">\(\beta_G = 0\)</span> and <span class="math inline">\(\beta_{GxE} = 0\)</span> jointly. Output when
+<code>&quot;joint&quot;</code> is in <code>tests</code>.</li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(lineardf[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">9</span><span class="sc">:</span><span class="dv">13</span>], <span class="at">caption =</span> <span class="st">&quot;Model 2 results&quot;</span>)</span></code></pre></div>
+<table>
+<caption>Model 2 results</caption>
+<thead>
+<tr class="header">
+<th align="right">bg_gxe</th>
+<th align="right">bg_gxe_lrt</th>
+<th align="right">bgxe</th>
+<th align="right">bgxe_lrt</th>
+<th align="right">joint_lrt</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">-1.4864649</td>
+<td align="right">8.4363261</td>
+<td align="right">1.4016489</td>
+<td align="right">3.2015268</td>
+<td align="right">8.4574092</td>
+</tr>
+<tr class="even">
+<td align="right">-0.4591966</td>
+<td align="right">0.3719000</td>
+<td align="right">-0.0430555</td>
+<td align="right">0.0013243</td>
+<td align="right">0.6750284</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.6509083</td>
+<td align="right">0.5512644</td>
+<td align="right">0.0084781</td>
+<td align="right">0.0000301</td>
+<td align="right">0.8070835</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="models-35-output-bg_eg-bg_case-bg_ctrl" class="section level3">
+<h3>Models 3–5 Output: <code>bg_eg</code>, <code>bg_case</code>,
+<code>bg_ctrl</code></h3>
+<p>Each test produces a <span class="math inline">\(\beta_G\)</span>
+estimate and a 1 df LRT statistic. Output when <code>&quot;bg_eg&quot;</code>,
+<code>&quot;bg_case&quot;</code>, or <code>&quot;bg_ctrl&quot;</code> are in
+<code>tests</code>, respectively.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(logisticdf[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">16</span><span class="sc">:</span><span class="dv">21</span>], <span class="at">caption =</span> <span class="st">&quot;Models 3-5 results&quot;</span>)</span></code></pre></div>
+<table>
+<caption>Models 3-5 results</caption>
 <colgroup>
-<col width="7%"></col>
-<col width="7%"></col>
-<col width="6%"></col>
-<col width="7%"></col>
-<col width="6%"></col>
-<col width="6%"></col>
-<col width="6%"></col>
-<col width="6%"></col>
-<col width="7%"></col>
-<col width="8%"></col>
-<col width="7%"></col>
-<col width="8%"></col>
-<col width="7%"></col>
+<col width="16%" />
+<col width="14%" />
+<col width="16%" />
+<col width="17%" />
+<col width="16%" />
+<col width="17%" />
 </colgroup>
 <thead>
 <tr class="header">
-<th align="left">snp</th>
-<th align="right">betadg</th>
-<th align="right">lrtdg</th>
-<th align="right">betagxe</th>
-<th align="right">lrtgxe</th>
-<th align="right">lrt2df</th>
-<th align="right">betaeg</th>
-<th align="right">lrteg</th>
-<th align="right">lrt3df</th>
-<th align="right">betacase</th>
-<th align="right">lrtcase</th>
-<th align="right">betactrl</th>
-<th align="right">lrtctrl</th>
+<th align="right">bg_eg</th>
+<th align="right">bg_eg_lrt</th>
+<th align="right">bg_case</th>
+<th align="right">bg_case_lrt</th>
+<th align="right">bg_ctrl</th>
+<th align="right">bg_ctrl_lrt</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">1:10001</td>
-<td align="right">0.7129</td>
-<td align="right">9.0230</td>
-<td align="right">0.4931</td>
-<td align="right">0.9520</td>
-<td align="right">9.9750</td>
-<td align="right">0.1001</td>
-<td align="right">3.4031</td>
-<td align="right">13.3781</td>
-<td align="right">0.1044</td>
-<td align="right">2.0128</td>
-<td align="right">-0.0098</td>
-<td align="right">0.0147</td>
+<td align="right">-0.3460221</td>
+<td align="right">0.7862570</td>
+<td align="right">0.8264053</td>
+<td align="right">0.8541469</td>
+<td align="right">-0.4673483</td>
+<td align="right">1.1215720</td>
 </tr>
 <tr class="even">
-<td align="left">1:10002</td>
-<td align="right">-0.0943</td>
-<td align="right">0.1219</td>
-<td align="right">0.6508</td>
-<td align="right">1.3569</td>
-<td align="right">1.4789</td>
-<td align="right">0.0194</td>
-<td align="right">0.0912</td>
-<td align="right">1.5700</td>
-<td align="right">0.0947</td>
-<td align="right">1.0967</td>
-<td align="right">-0.0516</td>
-<td align="right">0.3688</td>
+<td align="right">-0.0867130</td>
+<td align="right">0.0219140</td>
+<td align="right">-0.7545895</td>
+<td align="right">0.4064202</td>
+<td align="right">0.0815513</td>
+<td align="right">0.0144966</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.2255839</td>
+<td align="right">0.0949399</td>
+<td align="right">-0.4952261</td>
+<td align="right">0.0361789</td>
+<td align="right">-0.0220965</td>
+<td align="right">0.0008210</td>
 </tr>
 </tbody>
 </table>
-<p>In this example the snps options was used with the SNP IDs.</p>
-</div>
 </div>
 </div>
 
